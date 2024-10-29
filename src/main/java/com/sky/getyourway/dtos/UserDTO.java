@@ -33,9 +33,9 @@ public class UserDTO {
         this.email = u.getEmail();
         this.password = u.getPassword();
         List<BookingDTO> dtos = new ArrayList<>();
-        for (Booking b: u.getBookings()) {
+        for (Booking b : u.getBookings()) {
             dtos.add(new BookingDTO(b));
-        this.bookings = dtos;
+            this.bookings = dtos;
         }
     }
 
@@ -43,7 +43,6 @@ public class UserDTO {
     public UserDTO() {
         super();
     }
-
 
     // *******SETTERS & GETTERS*******
     public Integer getId() {

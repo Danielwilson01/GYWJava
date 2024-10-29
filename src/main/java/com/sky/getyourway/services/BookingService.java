@@ -18,5 +18,4 @@ public interface BookingService {
     List<BookingDTO> getAllBookings();
 
     List<BookingDTO> getBookingsByUserID(int userId);
-
 }

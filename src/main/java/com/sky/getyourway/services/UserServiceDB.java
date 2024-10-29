@@ -4,6 +4,7 @@ import com.sky.getyourway.domain.User;
 import com.sky.getyourway.dtos.UserDTO;
 import com.sky.getyourway.exception.EmailInUseException;
 import com.sky.getyourway.repo.UserRepo;
+
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,9 +18,9 @@ import java.util.Optional;
 @Primary
 public class UserServiceDB implements UserService {
 
-    private UserRepo repo;
+    private final UserRepo repo;
 
-    private BCryptPasswordEncoder encoder;
+    private final BCryptPasswordEncoder encoder;
 
     // Constructor injecting the repo
     public UserServiceDB(UserRepo repo, BCryptPasswordEncoder encoder) {
@@ -28,10 +29,9 @@ public class UserServiceDB implements UserService {
         this.encoder = encoder;
     }
 
-
     /* createCustomer(): adds new user to our DB
-      @params c user object
-      @return user added */
+    @params c user object
+    @return user added */
     @Override
     public User createCustomer(User user) {
         if (isEmailInUse(user.getEmail())) {
@@ -42,16 +42,16 @@ public class UserServiceDB implements UserService {
     }
 
     /* isEmailInUse(): checks if the email is already in our DB
-     @params email
-     @return true/false  */
+    @params email
+    @return true/false  */
     public boolean isEmailInUse(String email) {
         // returns TRUE if an email is found in the repo, otherwise returns FALSE
         return this.repo.findByEmailIgnoreCase(email).isPresent();
     }
 
     /* getUser(): gets a user given an ID
-     @params id user ID
-     @return user corresponding to that ID  */
+    @params id user ID
+    @return user corresponding to that ID  */
     @Override
     public User getUser(Integer id) {
         // Using Optional<> as it is possible we find no user with that id
@@ -64,29 +64,31 @@ public class UserServiceDB implements UserService {
     @Override
     public List<UserDTO> getAll() {
         List<UserDTO> dtos = new ArrayList<>();
-        for (User u: this.repo.findAll()) {
+        for (User u : this.repo.findAll()) {
             dtos.add(new UserDTO(u));
         }
         return dtos;
     }
 
     /* updateUser(): updates the user data
-     @params id (user ID), firstName, lastName, email, passwordCurrent, passwordNew
-     @return user for which details were updated with the updated details
-     NOTE: password parameters are to check if the user has inserted the correct password before updating*/
+    @params id (user ID), firstName, lastName, email, passwordCurrent, passwordNew
+    @return user for which details were updated with the updated details
+    NOTE: password parameters are to check if the user has inserted the correct password before updating*/
     @Override
     public User updateUser(Map<String, String> updates) {
 
-        User toUpdate = this.getUser(Integer.parseInt(updates.get("id")));  // gets the user to be updated
+        User toUpdate =
+                this.getUser(Integer.parseInt(updates.get("id"))); // gets the user to be updated
         String email = updates.get("email");
         String currentPassword = updates.get("currentPassword");
         String newPassword = updates.get("newPassword");
 
         if (email != null) toUpdate.setEmail(email);
-        if (currentPassword != null && newPassword != null && this.encoder.matches(currentPassword, toUpdate.getPassword())) {
-                toUpdate.setPassword(this.encoder.encode(newPassword));
+        if (currentPassword != null
+                && newPassword != null
+                && this.encoder.matches(currentPassword, toUpdate.getPassword())) {
+            toUpdate.setPassword(this.encoder.encode(newPassword));
         }
-
 
         System.out.println(toUpdate);
         return this.repo.save(toUpdate);
@@ -110,10 +112,7 @@ public class UserServiceDB implements UserService {
             this.repo.deleteById(id);
             return "User with id " + id + " removed.";
         } else {
-            return  "NOT FOUND";
-            }
+            return "NOT FOUND";
         }
+    }
 }
-
-
-

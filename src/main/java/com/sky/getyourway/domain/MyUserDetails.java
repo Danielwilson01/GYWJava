@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class MyUserDetails implements UserDetails {
 
-    private User user;
+    private final User user;
 
     private int userID;
 

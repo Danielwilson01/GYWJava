@@ -1,10 +1,11 @@
 package com.sky.getyourway.dtos;
+
 import java.util.Map;
 
 /*
-* Search DTO represents the information received from front-end
-* when a user requests a flight search
-* */
+ * Search DTO represents the information received from front-end
+ * when a user requests a flight search
+ * */
 
 public class SearchDTO {
 
@@ -16,7 +17,6 @@ public class SearchDTO {
     private Map<String, Integer> passengers;
     private int connections;
     private String cabinClass;
-
 
     // *******SETTERS & GETTERS*******
     public String getAirportTo() {

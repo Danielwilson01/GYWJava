@@ -3,9 +3,9 @@ package com.sky.getyourway.dtos;
 import java.util.List;
 
 /*
-* OrderDTO represents the executed and confirmed (paid) order made by a user
-* on a selected offer returned from Duffle API
-* */
+ * OrderDTO represents the executed and confirmed (paid) order made by a user
+ * on a selected offer returned from Duffle API
+ * */
 
 public class OrderDTO {
 

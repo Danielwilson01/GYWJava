@@ -1,6 +1,5 @@
 package com.sky.getyourway.dtos;
 
-
 import java.util.List;
 
 // TODO to be used to retrieve the order details to show on the profile

@@ -1,8 +1,8 @@
 package com.sky.getyourway.domain;
 
-import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.*;
 
 /*
 Class representing User and marked as @Entity for MySQL database (table). This object/table will contain:
@@ -18,9 +18,10 @@ Class representing User and marked as @Entity for MySQL database (table). This o
 public class User {
 
     // *******ATTRIBUTES*******
-    @Id  // sets ID to be a primary key
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Sets the ID to auto_increment
+    @Id // sets ID to be a primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Sets the ID to auto_increment
     private Integer id;
+
     private String firstName;
     private String lastName;
     private String email;
@@ -28,7 +29,6 @@ public class User {
 
     @OneToMany(mappedBy = "customer")
     private List<Booking> bookings;
-
 
     // *******CONSTRUCTORS*******
     // Defined Constructors
@@ -42,7 +42,8 @@ public class User {
 
     public User(String firstName, String lastName, String email, String password) {
         super();
-        // id not needed as it is automatically assigned and autoincrement as it has been flagged as primary key
+        // id not needed as it is automatically assigned and autoincrement as it has been flagged as
+        // primary key
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -53,7 +54,6 @@ public class User {
     public User() {
         super();
     }
-
 
     // *******SETTERS & GETTERS*******
     public Integer getId() {
@@ -106,24 +106,32 @@ public class User {
 
     // Other methods
     public boolean updatePassword(String current_password, String new_password) {
-        if(current_password.equals((this.getPassword()))) {
+        if (current_password.equals((this.getPassword()))) {
             this.setEmail(new_password);
-            return true;  // success, password changed
+            return true; // success, password changed
         }
         return false; // password not changed
-        }
-
+    }
 
     // *******TO STRING*******
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return "User{"
+                + "id="
+                + id
+                + ", firstName='"
+                + firstName
+                + '\''
+                + ", lastName='"
+                + lastName
+                + '\''
+                + ", email='"
+                + email
+                + '\''
+                + ", password='"
+                + password
+                + '\''
+                + '}';
     }
 
     // *******EQUALS & HASHCODE*******
@@ -133,7 +141,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email) && Objects.equals(password, user.password);
+        return Objects.equals(id, user.id)
+                && Objects.equals(firstName, user.firstName)
+                && Objects.equals(lastName, user.lastName)
+                && Objects.equals(email, user.email)
+                && Objects.equals(password, user.password);
     }
 
     @Override

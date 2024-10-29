@@ -1,7 +1,8 @@
 package com.sky.getyourway.domain;
 
-import javax.persistence.*;
 import java.util.Objects;
+
+import javax.persistence.*;
 
 /*
 Class representing Booking as stored in MySQL database. This object/table will contain:
@@ -20,12 +21,11 @@ public class Booking {
     // *******ATTRIBUTES*******
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;  // User unique identifier. @GeneratedValues annotates the if as auto_increment
+    private int id; // User unique identifier. @GeneratedValues annotates the if as auto_increment
 
-    private String orderReference;  // Duffel order reference
+    private String orderReference; // Duffel order reference
 
-    @ManyToOne
-    private User customer;  // Foreign Key
+    @ManyToOne private User customer; // Foreign Key
 
     // *******CONSTRUCTORS*******
     public Booking() {
@@ -47,16 +47,16 @@ public class Booking {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public User getCustomer() {
         return customer;
     }
 
     public void setCustomer(User customer) {
         this.customer = customer;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getOrderReference() {
@@ -85,9 +85,6 @@ public class Booking {
     // *******TO STRING*******
     @Override
     public String toString() {
-        return "Booking{" +
-                "id=" + id +
-                ", orderReference='" + orderReference + '\'' +
-                '}';
+        return "Booking{" + "id=" + id + ", orderReference='" + orderReference + '\'' + '}';
     }
 }

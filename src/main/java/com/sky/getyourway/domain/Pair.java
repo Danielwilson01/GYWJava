@@ -10,16 +10,16 @@ Pair class is used to represent the offers for inbound/outbound from the
 Duffle API when a user makes a request for return flights
  */
 
-
 public class Pair {
 
     // *******ATTRIBUTES*******
 
-    // passengerIds is a list of unique Duffle Ids assigned to every individual passenger to be travelling in this order
+    // passengerIds is a list of unique Duffle Ids assigned to every individual passenger to be
+    // travelling in this order
     private List<String> passengerIds;
-    private List<String> passengersType;  // adult / child / infant
-    private String offerId;  // Unique Duffel ID referring to the offer for inbound/outbound
-    private String currency;  //  GBP used for project
+    private List<String> passengersType; // adult / child / infant
+    private String offerId; // Unique Duffel ID referring to the offer for inbound/outbound
+    private String currency; //  GBP used for project
     private BigDecimal price;
     private OfferDTO outboundFlight;
     private OfferDTO inboundFlight;
@@ -27,7 +27,6 @@ public class Pair {
 
     // *******CONSTRUCTORS*******
     public Pair() {}
-
 
     // *******SETTERS & GETTERS*******
     public List<String> getPassengersType() {

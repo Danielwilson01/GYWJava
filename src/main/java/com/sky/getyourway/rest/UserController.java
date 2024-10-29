@@ -2,23 +2,20 @@ package com.sky.getyourway.rest;
 
 import com.sky.getyourway.domain.User;
 import com.sky.getyourway.dtos.UserDTO;
-import com.sky.getyourway.exception.EmailInUseException;
 import com.sky.getyourway.services.UserService;
+import java.util.List;
+import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
-
 /*Constroller for the User class*/
-
 
 @RestController
 public class UserController {
 
-    private UserService service;
+    private final UserService service;
 
     public UserController(UserService service) {
         super();
@@ -26,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/hello")
-    public String httpTest(){
+    public String httpTest() {
         return "Yep, you're ON!";
     }
 
@@ -34,8 +31,9 @@ public class UserController {
     // When user creates a new account and submits its data, a new user is created in our DB
     public ResponseEntity<User> registerCustomer(@RequestBody User c) {
         // Creates and adds the user to DB + responds to client with an HTTP status of created
-        // NOTE: the try/catch is checking that the email  used to create new customer is NOT already assigned to other users
-
+        // NOTE: the try/catch is checking that the email  used to create new customer is NOT
+        // already
+        // assigned to other users
 
         c.setEmail(c.getEmail().toLowerCase());
         return new ResponseEntity<>(this.service.createCustomer(c), HttpStatus.CREATED);
@@ -49,10 +47,13 @@ public class UserController {
             // If no customer is found with that email, return a NOT FOUND status
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else if (!found.getPassword().equals(loginData.get("password"))) {
-            // If a customer is found by email but the password doesn't match, return status UNAUTHORIZED
+            // If a customer is found by email but the password doesn't match, return status
+            // UNAUTHORIZED
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-        // If a customer is found by email and password matches the stored password, return Status OK and customer
+        // If a customer is found by email and password matches the stored password, return Status
+        // OK
+        // and customer
         return ResponseEntity.ok(found);
     }
 
@@ -79,7 +80,9 @@ public class UserController {
 
     @GetMapping("/user")
     public UserDTO getCurrent() {
-        User user = this.service.findCustomerByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user =
+                this.service.findCustomerByEmail(
+                        SecurityContextHolder.getContext().getAuthentication().getName());
         return new UserDTO(user);
     }
 }

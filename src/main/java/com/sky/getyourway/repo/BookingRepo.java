@@ -11,5 +11,4 @@ public interface BookingRepo extends JpaRepository<Booking, Integer> {
 
     // Method to be used to find a booking searching by orderReference in DB
     Booking findByOrderReference(String orderReference);
-
 }

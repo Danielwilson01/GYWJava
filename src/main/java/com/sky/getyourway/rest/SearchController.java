@@ -20,6 +20,7 @@ import com.sky.getyourway.domain.User;
 import com.sky.getyourway.dtos.*;
 import com.sky.getyourway.services.BookingService;
 import com.sky.getyourway.services.OrderService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -51,12 +52,12 @@ public class SearchController {
     // Instance of the DuffelApiClient imported class
     // Note that the dependency was added to the pom doc
     // used to interact with the Duffel API.
-    private DuffelApiClient client;
+    private final DuffelApiClient client;
 
     // service for booking table to enable adding/removing bookings to the MySQL table
-    private BookingService bookingService;
+    private final BookingService bookingService;
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
     // *******CONSTRUCTORS*******
     public SearchController(DuffelApiClient client, BookingService bookingService, OrderService orderService) {
@@ -65,15 +66,64 @@ public class SearchController {
         this.orderService = orderService;
     }
 
+    /* getJourney() is a method created for its use within the GET request method viewBooking() to help retrieving
+    the info of the outbound and inbound flights booked
+    @params slices (array containing [outboundData, inboundData]. Index 1 can be null if the flight is one way)
+            journey (List of strings to hold the flight details)
+            index  (int to specify the index of the slice to get: 0 for outbound, 1 for inbound)
+    @return void no return as this method main goal is to add info to the respective journey Lists
+    */
+    private static void getJourney(ArrayNode slices, List<String> journey, int index) {
 
-    // *******GETTER*******
-    public DuffelApiClient getClient() {
-        return client;
+        // All info comes from the secgments which is the part to store each way's data
+        // Note that segments can contain nested segments if there are connectins between flights
+        ArrayNode segmentsTo = (ArrayNode) slices.get(index).get("segments");
+
+        // Loop through all flights relating to that journey, gett and add the info
+        for (JsonNode segment : segmentsTo) {
+
+            JsonNode origin = segment.get("origin");
+            String airportName = origin.get("name").asText();
+            String iataCode = origin.get("iata_code").asText();
+            String flightNumber = segment.get("operating_carrier_flight_number").asText();
+            String name = segment.get("operating_carrier").get("name").asText();
+            String departTime = segment.get("departing_at").asText();
+
+            journey.add("Origin: " + iataCode + " " + airportName + ",");
+
+            String depStr = String.join(" ",departTime.split("T"));
+            journey.add("Departing at: " + depStr.substring(0, depStr.length() - 3) + ",");
+
+            JsonNode dest = segment.get("destination");
+            airportName = dest.get("name").asText();
+            iataCode = dest.get("iata_code").asText();
+
+            String arriveTime = segment.get("arriving_at").asText();
+
+            journey.add("Destination: " + iataCode + " " + airportName + ",");
+
+            String arrStr = String.join(" ",arriveTime.split("T"));
+            journey.add("Arriving at: " + arrStr.substring(0, arrStr.length() - 3) + ",");
+
+            journey.add("Flight Number: " + flightNumber + ",");
+            journey.add("Airline: " + name);
+
+            // Guidance for the Strings info to be stored:
+            // Origin: DEL Indra Gandhi Airport     16:30 2024-01-02
+            // Destination: LHR London Heathrow     20:00 2024-01-02
+            // Flight Number: 1243
+            // Airline: Duffel Airways
+        }
     }
 
 
 
     // *******REQUESTS*******
+
+    // *******GETTER*******
+    public DuffelApiClient getClient() {
+        return client;
+    }
 
     /* Offers(): post request received from the front end when a user searches for a specific route
     @params sdto is an object of SearchDTO containing the search selection from users
@@ -271,7 +321,6 @@ public class SearchController {
         return offerDTOPairList;
     }
 
-
     /* Oder(): post request received from the front end when a user selects an offer to proceed with its booking
        @params odto is an object of ObjectDTO containing the offer details and Passengers list with their duffle id
        @return oder ID as a String
@@ -322,8 +371,6 @@ public class SearchController {
         return order.getId();
     }
 
-
-
     /* Cancel(): delete request received from the front end when a user selects a paid offer to be cancelled
        @params orderId duffle ID identifying a specific order/booking
        @return string confirming the booking
@@ -343,7 +390,6 @@ public class SearchController {
         return "🙅 Cancelled order: " + cancellation.getOrderId() + "\n" +
                 "Cancellation Id: " + cancellation.getId() + "\n" + "At: " + cancellation.getConfirmedAt();
     }
-
 
     /* viewBooking(): method to retrieve the information about a specific booking a user paid
        @params orderId duffle ID identifying a specific order/booking
@@ -406,61 +452,6 @@ public class SearchController {
         bookingDTO.setOrderReference(orderId);
 
         return bookingDTO;
-    }
-
-
-    /* getJourney() is a method created for its use within the GET request method viewBooking() to help retrieving
-    the info of the outbound and inbound flights booked
-    @params slices (array containing [outboundData, inboundData]. Index 1 can be null if the flight is one way)
-            journey (List of strings to hold the flight details)
-            index  (int to specify the index of the slice to get: 0 for outbound, 1 for inbound)
-    @return void no return as this method main goal is to add info to the respective journey Lists
-    */
-    private static void getJourney(ArrayNode slices, List<String> journey, int index) {
-
-        // All info comes from the secgments which is the part to store each way's data
-        // Note that segments can contain nested segments if there are connectins between flights
-        ArrayNode segmentsTo = (ArrayNode) slices.get(index).get("segments");
-
-        // Loop through all flights relating to that journey, gett and add the info
-        for (JsonNode segment : segmentsTo) {
-
-            JsonNode origin = segment.get("origin");
-            String airportName = origin.get("name").asText();
-            String iataCode = origin.get("iata_code").asText();
-            String flightNumber = segment.get("operating_carrier_flight_number").asText();
-            String name = segment.get("operating_carrier").get("name").asText();
-            String departTime = segment.get("departing_at").asText();
-
-            StringBuilder sb1 = new StringBuilder();
-            sb1.append("Origin: ").append(iataCode).append(" ").append(airportName).append(",");
-            journey.add(sb1.toString());
-
-            String depStr = String.join(" ",departTime.split("T"));
-            journey.add("Departing at: " + depStr.substring(0, depStr.length() - 3) + ",");
-
-            JsonNode dest = segment.get("destination");
-            airportName = dest.get("name").asText();
-            iataCode = dest.get("iata_code").asText();
-
-            String arriveTime = segment.get("arriving_at").asText();
-
-            StringBuilder sb2 = new StringBuilder();
-            sb2.append("Destination: ").append(iataCode).append(" ").append(airportName).append(",");
-            journey.add(sb2.toString());
-
-            String arrStr = String.join(" ",arriveTime.split("T"));
-            journey.add("Arriving at: " + arrStr.substring(0, arrStr.length() - 3) + ",");
-
-            journey.add("Flight Number: " + flightNumber + ",");
-            journey.add("Airline: " + name);
-
-            // Guidance for the Strings info to be stored:
-            // Origin: DEL Indra Gandhi Airport     16:30 2024-01-02
-            // Destination: LHR London Heathrow     20:00 2024-01-02
-            // Flight Number: 1243
-            // Airline: Duffel Airways
-        }
     }
 
     @GetMapping("/allUserBookings/{userId}")

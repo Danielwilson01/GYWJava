@@ -9,8 +9,11 @@ import java.util.Map;
 public interface UserService {
 
     User createCustomer(User u);
+
     User getUser(Integer id);
+
     List<UserDTO> getAll();
+
     User updateUser(Map<String, String> updates);
 
     User findCustomerByEmail(String email);
